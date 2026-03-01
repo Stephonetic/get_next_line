@@ -6,11 +6,16 @@
 /*   By: shannema <shannema@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/01 03:04:55 by shannema          #+#    #+#             */
-/*   Updated: 2026/03/01 03:05:48 by shannema         ###   ########.fr       */
+/*   Updated: 2026/03/01 04:43:00 by shannema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "get_next_line.h"
+
+
 
 char	*get_next_line(int fd)
 {
 	
 }
+
