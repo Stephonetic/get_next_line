@@ -6,7 +6,7 @@
 /*   By: shannema <shannema@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/01 03:14:47 by shannema          #+#    #+#             */
-/*   Updated: 2026/03/01 03:21:28 by shannema         ###   ########.fr       */
+/*   Updated: 2026/03/05 04:17:53 by shannema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,3 +42,4 @@ void	*ft_memcpy(void *dst, const void *src, size_t n);
 char	*get_next_line(int fd);
 
 #endif
+
