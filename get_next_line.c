@@ -6,7 +6,7 @@
 /*   By: shannema <shannema@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/01 03:04:55 by shannema          #+#    #+#             */
-/*   Updated: 2026/03/05 04:46:08 by shannema         ###   ########.fr       */
+/*   Updated: 2026/03/07 04:30:08 by shannema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,91 +73,262 @@
 // 	return (line);
 // }
 
+// #include "get_next_line.h"
+
+// static char	*read_to_stash(int fd, char *stash)
+// {
+// 	char	*buf;
+// 	ssize_t	bytes_read;
+
+// 	if (ft_strchr(stash, '\n'))
+// 		return (stash);
+// 	buf = malloc(BUFFER_SIZE + 1);
+// 	if (!buf)
+// 		return (NULL);
+// 	bytes_read = read(fd, buf, BUFFER_SIZE);
+// 	if (bytes_read == 0)
+// 	{
+// 		free(buf);
+// 		return (stash);
+// 	}
+// 	return (handle_read(fd, stash, buf, bytes_read));
+// }
+
+// static char	*handle_read(int fd, char *stash, char *buf, ssize_t bytes_read)
+// {
+// 	char	*tmp;
+
+// 	if (bytes_read < 0)
+// 	{
+// 		free(buf);
+// 		free(stash);
+// 		return (NULL);
+// 	}
+// 	buf[bytes_read] = '\0';
+// 	tmp = ft_strjoin(stash, buf);
+// 	free(buf);
+// 	free(stash);
+// 	if (!tmp)
+// 		return (NULL);
+// 	return (read_to_stash(fd, tmp));
+// }
+
+// static size_t	line_len(const char *stash)
+// {
+// 	if (!*stash || *stash == '\n')
+// 	{
+// 		if (*stash == '\n')
+// 			return (1);
+// 		return (0);
+// 	}
+// 	return (1 + line_len(stash + 1));
+// }
+
+// static char	*extract_line(char *stash)
+// {
+// 	size_t	len;
+// 	char	*line;
+
+// 	if (!stash || !stash[0])
+// 		return (NULL);
+// 	len = line_len(stash);
+// 	line = malloc(len + 1);
+// 	if (!line)
+// 		return (NULL);
+// 	ft_strlcpy(line, stash, len + 1);
+// 	return (line);
+// }
+
+// char	*get_next_line(int fd)
+// {
+// 	static char	*stash;
+// 	char		*line;
+// 	char		*newline;
+// 	char		*new_stash;
+
+// 	if (fd < 0 || BUFFER_SIZE <= 0)
+// 		return (NULL);
+// 	stash = read_to_stash(fd, stash);
+// 	if (!stash)
+// 		return (NULL);
+// 	line = extract_line(stash);
+// 	newline = ft_strchr(stash, '\n');
+// 	if (newline && *(newline + 1))
+// 		new_stash = ft_strdup(newline + 1);
+// 	else
+// 		new_stash = NULL;
+// 	free(stash);
+// 	stash = new_stash;
+// 	return (line);
+// }
+
+//new code
+// #include "get_next_line.h"
+
+// static size_t	line_len(const char *buf)
+// {
+// 	if (!*buf || *buf == '\n')
+// 	{
+// 		if (*buf == '\n')
+// 			return (1);
+// 		return (0);
+// 	}
+// 	return (1 + line_len(buf + 1));
+// }
+
+// static char	*fill_buffer(int fd, char *tmp, char *carry)
+// {
+// 	char	chunk[BUFFER_SIZE + 1];
+// 	char	*old;
+// 	int		n;
+
+// 	if (ft_strchr(tmp, '\n'))
+// 		return (tmp);
+// 	n = read(fd, chunk, BUFFER_SIZE);
+// 	if (n < 0)
+// 	{
+// 		free(tmp);
+// 		carry[0] = '\0';
+// 		return (NULL);
+// 	}
+// 	if (n == 0)
+// 		return (tmp);
+// 	chunk[n] = '\0';
+// 	old = tmp;
+// 	tmp = ft_strjoin(old, chunk);
+// 	free(old);
+// 	if (!tmp)
+// 		return (NULL);
+// 	return (fill_buffer(fd, tmp, carry));
+// }
+
+// static char	*extract_and_carry(char *tmp, char *carry)
+// {
+// 	char	*line;
+// 	size_t	len;
+
+// 	if (!tmp || !tmp[0])
+// 		return (NULL);
+// 	len = line_len(tmp);
+// 	line = malloc(len + 1);
+// 	if (!line)
+// 		return (NULL);
+// 	ft_strlcpy(line, tmp, len + 1);
+// 	ft_strlcpy(carry, tmp + len, BUFFER_SIZE + 1);
+// 	return (line);
+// }
+
+// char	*get_next_line(int fd)
+// {
+// 	static char	carry[BUFFER_SIZE + 1];
+// 	char		*tmp;
+// 	char		*line;
+
+// 	if (fd < 0 || BUFFER_SIZE <= 0)
+// 	{
+// 		carry[0] = '\0';
+// 		return (NULL);
+// 	}
+// 	tmp = ft_strdup(carry);
+// 	carry[0] = '\0';
+// 	if (!tmp)
+// 		return (NULL);
+// 	tmp = fill_buffer(fd, tmp, carry);
+// 	if (!tmp)
+// 		return (NULL);
+// 	line = extract_and_carry(tmp, carry);
+// 	free(tmp);
+// 	return (line);
+// }
+
+//new code (final)
+
 #include "get_next_line.h"
 
-static char	*read_to_stash(int fd, char *stash)
+static size_t	line_len(const char *buf)
 {
-	char	*buf;
-	ssize_t	bytes_read;
-
-	if (ft_strchr(stash, '\n'))
-		return (stash);
-	buf = malloc(BUFFER_SIZE + 1);
-	if (!buf)
-		return (NULL);
-	bytes_read = read(fd, buf, BUFFER_SIZE);
-	if (bytes_read == 0)
+	if (!*buf || *buf == '\n')
 	{
-		free(buf);
-		return (stash);
-	}
-	return (handle_read(fd, stash, buf, bytes_read));
-}
-
-static char	*handle_read(int fd, char *stash, char *buf, ssize_t bytes_read)
-{
-	char	*tmp;
-
-	if (bytes_read < 0)
-	{
-		free(buf);
-		free(stash);
-		return (NULL);
-	}
-	buf[bytes_read] = '\0';
-	tmp = ft_strjoin(stash, buf);
-	free(buf);
-	free(stash);
-	if (!tmp)
-		return (NULL);
-	return (read_to_stash(fd, tmp));
-}
-
-static size_t	line_len(const char *stash)
-{
-	if (!*stash || *stash == '\n')
-	{
-		if (*stash == '\n')
+		if (*buf == '\n')
 			return (1);
 		return (0);
 	}
-	return (1 + line_len(stash + 1));
+	return (1 + line_len(buf + 1));
 }
 
-static char	*extract_line(char *stash)
+static char	*extract_and_carry(char *tmp, char *carry)
 {
-	size_t	len;
 	char	*line;
+	size_t	len;
 
-	if (!stash || !stash[0])
+	if (!tmp || !tmp[0])
 		return (NULL);
-	len = line_len(stash);
+	len = line_len(tmp);
 	line = malloc(len + 1);
 	if (!line)
 		return (NULL);
-	ft_strlcpy(line, stash, len + 1);
+	ft_strlcpy(line, tmp, len + 1);
+	ft_strlcpy(carry, tmp + len, BUFFER_SIZE + 1);
 	return (line);
+}
+
+static char	*join_chunk(char *tmp, char *chunk, int n)
+{
+	char	*old;
+
+	chunk[n] = '\0';
+	old = tmp;
+	tmp = ft_strjoin(old, chunk);
+	free(old);
+	free(chunk);
+	return (tmp);
+}
+
+static char	*fill_buffer(int fd, char *tmp, char *carry)
+{
+	char	*chunk;
+	int		n;
+
+	if (!tmp || ft_strchr(tmp, '\n'))
+		return (tmp);
+	chunk = malloc(BUFFER_SIZE + 1);
+	if (!chunk)
+		return (NULL);
+	n = read(fd, chunk, BUFFER_SIZE);
+	if (n < 0)
+	{
+		free(chunk);
+		free(tmp);
+		carry[0] = '\0';
+		return (NULL);
+	}
+	if (n == 0)
+	{
+		free(chunk);
+		return (tmp);
+	}
+	return (fill_buffer(fd, join_chunk(tmp, chunk, n), carry));
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*stash;
+	static char	carry[BUFFER_SIZE + 1];
+	char		*tmp;
 	char		*line;
-	char		*newline;
-	char		*new_stash;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
+	{
+		carry[0] = '\0';
 		return (NULL);
-	stash = read_to_stash(fd, stash);
-	if (!stash)
+	}
+	tmp = ft_strdup(carry);
+	carry[0] = '\0';
+	if (!tmp)
 		return (NULL);
-	line = extract_line(stash);
-	newline = ft_strchr(stash, '\n');
-	if (newline && *(newline + 1))
-		new_stash = ft_strdup(newline + 1);
-	else
-		new_stash = NULL;
-	free(stash);
-	stash = new_stash;
+	tmp = fill_buffer(fd, tmp, carry);
+	if (!tmp)
+		return (NULL);
+	line = extract_and_carry(tmp, carry);
+	free(tmp);
 	return (line);
 }
